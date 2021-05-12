@@ -21,7 +21,6 @@ describe('SignUp Controller', () => {
         const httpRequest = {
             body: {
                 name: '',
-                email: '',
                 password: '',
                 passwordConfirmation: ''
             }
@@ -37,7 +36,6 @@ describe('SignUp Controller', () => {
             body: {
                 name: '',
                 email: '',
-                password: '',
                 passwordConfirmation: ''
             }
         }
