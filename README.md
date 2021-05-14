@@ -141,7 +141,7 @@ O objetivo do treinamento é mostrar como criar uma API com uma arquitetura bem 
 > ## Features de Testes
 
 * Testes Unitários
-* Testes de Integração (API Rest & GraphQL)
+* Testes de Integração (API Rest)
 * Cobertura de Testes
 * Test Doubles
 * Mocks
