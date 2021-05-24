@@ -8,21 +8,24 @@ export class DbAuthentication implements Authentication {
     private readonly hashComparer: HashComparer
     private readonly tokenGenerator: TokenGenerator
 
-    constructor (
-        loadAccountByEmailRepository: LoadAccountByEmailRepository, 
+    constructor(
+        loadAccountByEmailRepository: LoadAccountByEmailRepository,
         hashComparer: HashComparer,
         tokenGenerator: TokenGenerator
-        ) {
+    ) {
         this.loadAccountByEmailRepository = loadAccountByEmailRepository
         this.hashComparer = hashComparer
         this.tokenGenerator = tokenGenerator
     }
 
-    async auth (authentication: AuthenticationModel): Promise<string> {
+    async auth(authentication: AuthenticationModel): Promise<string> {
         const account = await this.loadAccountByEmailRepository.load(authentication.email)
         if (account) {
-            await this.hashComparer.compare(authentication.password, account.password)
-            await this.tokenGenerator.generate(account.id)
+            const isValid = await this.hashComparer.compare(authentication.password, account.password)
+            if (isValid) {
+                const acessToken = await this.tokenGenerator.generate(account.id)
+                return acessToken
+            }
         }
         return null
     }
