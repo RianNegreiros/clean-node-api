@@ -2,7 +2,7 @@ import { LogErrorRepository } from "../../data/protocols/db/log/log-error-reposi
 import { AccountModel } from "../../domain/models/account"
 import { ok, serverError } from "../../presentation/helpers/http/http-helpers"
 import { Controller, HttpRequest, HttpResponse } from "../../presentation/protocols"
-import { LogControllerDecoretor } from "./log-controller-decorator"
+import { LogControllerDecorator } from "./log-controller-decorator"
 
 const makeController = (): Controller => {
     class ControllerStub implements Controller {
@@ -45,7 +45,7 @@ const makeFakeServerError = (): HttpResponse => {
 }
 
 interface SutTypes {
-    sut: LogControllerDecoretor
+    sut: LogControllerDecorator
     controllerStub: Controller
     logErrorRepositoryStub: LogErrorRepository
 }
@@ -53,7 +53,7 @@ interface SutTypes {
 const makeSut = (): SutTypes => {
     const controllerStub = makeController()
     const logErrorRepositoryStub = makeLogErrorRepository()
-    const sut = new LogControllerDecoretor(controllerStub, logErrorRepositoryStub)
+    const sut = new LogControllerDecorator(controllerStub, logErrorRepositoryStub)
     return {
         sut,
         controllerStub,
