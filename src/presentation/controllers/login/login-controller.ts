@@ -1,7 +1,7 @@
 import { Authentication } from "../../../domain/usercases/authentication";
 import { badRequest, ok, serverError, unauthorized } from "../../helpers/http/http-helpers";
-import { Validation } from "../signup/signup-protocols";
-import { Controller, HttpRequest, HttpResponse } from "./login-protocols";
+import { Validation } from "../signup/signup-controller-protocols";
+import { Controller, HttpRequest, HttpResponse } from "./login-controller-protocols";
 
 export class LoginController implements Controller {
     private readonly authentication: Authentication

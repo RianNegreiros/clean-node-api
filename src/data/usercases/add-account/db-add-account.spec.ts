@@ -2,11 +2,11 @@ import { Hasher } from "./db-add-account-protocols"
 import { DbAddAccount } from "./db-add-account"
 import { AccountModel } from "../../../domain/models/account"
 import { AddAccountModel } from "../../../domain/usercases/add-account"
-import { AddAccountRepository } from "../../protocols/db/add-account-repository"
+import { AddAccountRepository } from "../../protocols/db/account/add-account-repository"
 
 const makeHasher = (): Hasher => {
     class HasherStub {
-        async encrypt(value: string): Promise<string> {
+        async hash(value: string): Promise<string> {
             return new Promise(resolve => resolve('hashed_password'))
         }
     }
@@ -57,14 +57,14 @@ const makeSut = (): SutTypes => {
 describe('DbAddAccount Usercase', () => {
     test('Should call Hasher with correct password', async () => {
         const { sut, hasherStub } = makeSut()
-        const encryptSpy = jest.spyOn(hasherStub, 'encrypt')
+        const encryptSpy = jest.spyOn(hasherStub, 'hash')
         await sut.add(makeFakeAccountData())
         expect(encryptSpy).toHaveBeenCalledWith('valid_password')
     })
 
     test('Should throw if Hasher throws', async () => {
         const { sut, hasherStub } = makeSut()
-        jest.spyOn(hasherStub, 'encrypt').mockReturnValueOnce(new Promise((resolve, reject) => reject(new Error())))
+        jest.spyOn(hasherStub, 'hash').mockReturnValueOnce(new Promise((resolve, reject) => reject(new Error())))
         const promise = sut.add(makeFakeAccountData())
         expect(promise).rejects.toThrow()
     })
