@@ -4,13 +4,10 @@ import { Validation } from "../signup/signup-controller-protocols";
 import { Controller, HttpRequest, HttpResponse } from "./login-controller-protocols";
 
 export class LoginController implements Controller {
-    private readonly authentication: Authentication
-    private readonly validation: Validation
-
-    constructor(authentication: Authentication, validation: Validation) {
-        this.authentication = authentication
-        this.validation = validation
-    }
+    constructor(
+        private readonly authentication: Authentication,
+        private readonly validation: Validation
+    ) { }
 
     async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
         try {
@@ -20,7 +17,7 @@ export class LoginController implements Controller {
             }
             const { email, password } = httpRequest.body
             const accessToken = await this.authentication.auth({
-                email, 
+                email,
                 password
             })
             if (!accessToken) {
