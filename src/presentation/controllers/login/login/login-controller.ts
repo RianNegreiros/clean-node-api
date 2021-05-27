@@ -1,4 +1,4 @@
-import { Authentication } from "../../../../domain/usercases/authentication";
+import { Authentication } from "../../../../domain/usecases/authentication";
 import { badRequest, ok, serverError, unauthorized } from "../../../helpers/http/http-helpers";
 import { Validation } from "../signup/signup-controller-protocols";
 import { Controller, HttpRequest, HttpResponse } from "./login-controller-protocols";
