@@ -22,16 +22,25 @@ describe('Signup Routes', () => {
     })
 
     describe('POST /signup', () => {
-        test('Should return an account on success', async () => {
+        test('Should return 200 on signup', async () => {
             await request(app)
                 .post('/api/signup')
                 .send({
                     name: '',
                     email: '',
-                    password: '',
+                    password: '123',
                     passwordConfirmation: '123'
                 })
                 .expect(200)
+            await request(app)
+                .post('/api/signup')
+                .send({
+                    name: '',
+                    email: '',
+                    password: '123',
+                    passwordConfirmation: '123'
+                })
+                .expect(403)
         })
     })
 
