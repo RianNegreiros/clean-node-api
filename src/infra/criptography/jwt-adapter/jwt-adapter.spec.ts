@@ -26,7 +26,7 @@ describe('Jwt Adapter', () => {
 
         test('Should return a token on sign success', async () => {
             const sut = makeSut()
-            const accessToken = await sut.encrypt('any_id')
+            const accessToken = await sut.encrypt('any_token')
             expect(accessToken).toBe('any_token')
         })
 
@@ -36,7 +36,7 @@ describe('Jwt Adapter', () => {
                 throw new Error()
             })
             const promise = sut.encrypt('any_id')
-            expect(promise).toHaveBeenCalledWith({ id: 'any_id' }, 'secret')
+            await expect(promise).rejects.toThrow()
         })
     })
 
@@ -47,5 +47,12 @@ describe('Jwt Adapter', () => {
             await sut.decrypt('any_id')
             expect(signSpy).toHaveBeenCalledWith('any_token', 'secret')
         })
+
+        test('Should return a value on veirfy success', async () => {
+            const sut = makeSut()
+            const value = await sut.decrypt('any_token')
+            expect(value).toBe('any_value')
+        })
+
     })
 })
