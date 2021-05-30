@@ -26,7 +26,7 @@ describe('Jwt Adapter', () => {
 
         test('Should return a token on sign success', async () => {
             const sut = makeSut()
-            const accessToken = await sut.encrypt('any_token')
+            const accessToken = await sut.encrypt('any_id')
             expect(accessToken).toBe('any_token')
         })
 
