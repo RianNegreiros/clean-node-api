@@ -1,29 +1,27 @@
-import { AddSurvey } from "../../../../domain/usecases/add-survey"
-import { badRequest, serverError } from "../../../helpers/http/http-helpers"
-import { Validation } from "../../../protocols/validation"
-import { Controller, HttpRequest, HttpResponse } from "./add-survey-protocols"
+import { Controller, HttpRequest, HttpResponse, Validation, AddSurvey } from './add-survey-controller-protocols'
+import { badRequest, serverError, noContent } from '../../../helpers/http/http-helper'
 
 export class AddSurveyController implements Controller {
-    constructor (
-        private readonly validation: Validation,
-        private readonly addSurvey: AddSurvey
-    ) {}
+  constructor (
+    private readonly validation: Validation,
+    private readonly addSurvey: AddSurvey
+  ) {}
 
-    async handle (httpRequest: HttpRequest): Promise<HttpResponse> {
-        try {
-            const error = this.validation.validate(httpRequest.body)
-            if (error) {
-                return badRequest(error)
-            }
-            const { question, answers } = httpRequest.body
-            await this.addSurvey.add({
-                question,
-                answers,
-                date: new Date()
-            })
-            return null
-        } catch (error) {
-            return serverError(error)
-        }
+  async handle (httpRequest: HttpRequest): Promise<HttpResponse> {
+    try {
+      const error = this.validation.validate(httpRequest.body)
+      if (error) {
+        return badRequest(error)
+      }
+      const { question, answers } = httpRequest.body
+      await this.addSurvey.add({
+        question,
+        answers,
+        date: new Date()
+      })
+      return noContent()
+    } catch (error) {
+      return serverError(error)
     }
+  }
 }

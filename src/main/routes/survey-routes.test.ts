@@ -1,74 +1,74 @@
 import request from 'supertest'
 import app from '../config/app'
-import env from '../config/env'
+import { MongoHelper } from '../../infra/db/mongodb/helpers/mongo-helper'
 import { Collection } from 'mongodb'
 import { sign } from 'jsonwebtoken'
-import { MongoHelper } from '../../infra/db/mongodb/helpers/mongo-helper'
+import env from '../config/env'
 
-let surveyColletion: Collection
-let accountColletion: Collection
+let surveyCollection: Collection
+let accountCollection: Collection
 
-describe('Surveys Routes', () => {
+describe('Survey Routes', () => {
+  beforeAll(async () => {
+    await MongoHelper.connect(process.env.MONGO_URL)
+  })
 
-    beforeAll(async () => {
-        await MongoHelper.connect(process.env.MONGO_URL)
-    })
+  afterAll(async () => {
+    await MongoHelper.disconnect()
+  })
 
-    afterAll(async () => {
-        await MongoHelper.disconnect()
-    })
+  beforeEach(async () => {
+    surveyCollection = await MongoHelper.getCollection('surveys')
+    await surveyCollection.deleteMany({})
+    accountCollection = await MongoHelper.getCollection('accounts')
+    await accountCollection.deleteMany({})
+  })
 
-    beforeEach(async () => {
-        surveyColletion = await MongoHelper.getColletion('surveys')
-        await surveyColletion.deleteMany({})
-        surveyColletion = await MongoHelper.getColletion('accounts')
-        await surveyColletion.deleteMany({})
-    })
-
-    describe('POST /surveys', () => {
-        test('Should return 403 on add survey without accessToken', async () => {
-            await request(app)
-                .post('/api/surveys')
-                .send({
-                    question: 'Question',
-                    answers: [{
-                        answer: 'Answer 1',
-                        immage: 'http://image-name.com'
-                    }, {
-                        answer: 'Answer 2'
-                    }]
-                })
-                .expect(403)
+  describe('POST /surveys', () => {
+    test('Should return 403 on add survey without accessToken', async () => {
+      await request(app)
+        .post('/api/surveys')
+        .send({
+          question: 'Question',
+          answers: [{
+            answer: 'Answer 1',
+            image: 'http://image-name.com'
+          }, {
+            answer: 'Answer 2'
+          }]
         })
-
-        test('Should return 204 on add survey with accessToken', async () => {
-            const res = await accountColletion.insertOne({
-                name: 'Rian',
-                email: 'riannegreiros@gmail.com',
-                password: '123'
-            })
-            const id = res.ops[0]._id
-            const accessToken = sign({ id }, env.jwtSecret)
-            await accountColletion.updateOne({
-                _id: id,
-            }, {
-                $set: {
-                    accessToken
-                }
-            })
-            await request(app)
-                .post('/api/surveys')
-                .set('x-access-token', accessToken)
-                .send({
-                    question: 'Question',
-                    answers: [{
-                        answer: 'Answer 1',
-                        immage: 'http://image-name.com'
-                    }, {
-                        answer: 'Answer 2'
-                    }]
-                })
-                .expect(204)
-        })
+        .expect(403)
     })
+
+    test('Should return 204 on add survey with valid accessToken', async () => {
+      const res = await accountCollection.insertOne({
+        name: 'Rodrigo',
+        email: 'rodrigo.manguinho@gmail.com',
+        password: '123',
+        role: 'admin'
+      })
+      const id = res.ops[0]._id
+      const accessToken = sign({ id }, env.jwtSecret)
+      await accountCollection.updateOne({
+        _id: id
+      }, {
+        $set: {
+          accessToken
+        }
+      })
+      await request(app)
+        .post('/api/surveys')
+        .set('x-access-token', accessToken)
+        .send({
+          question: 'Question',
+          answers: [{
+            answer: 'Answer 1',
+            image: 'http://image-name.com'
+          }, {
+            answer: 'Answer 2'
+          }]
+        })
+        .expect(204)
+    })
+  })
 })
